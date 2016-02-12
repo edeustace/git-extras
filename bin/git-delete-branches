@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+delete-branches-starting-with() {
+  branches=$(git branch | grep -v \* | sed "s/^  //")
+  IFS=$'\n' read -rd '' -a branch_arr <<<"$branches"
+  sub=$1
+  declare -a keep=(${branch_arr[@]//$sub*/})
+  for b in ${branch_arr[@]}
+  do
+    if [[ $b == "$sub"* ]]
+    then
+      git branch -D "$b"
+    fi
+  done
+}
+
+case "$1" in
+  --starts-with)
+    delete-branches-starting-with $2
+    exit 0
+    ;;
+  *)
+esac
+
+echo "you must add --starts-with pattern"
+exit 1
